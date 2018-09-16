@@ -74,11 +74,6 @@ static void setup(CURL *hnd)
   /* set the same URL */
   curl_easy_setopt(hnd, CURLOPT_URL, "https://localhost:8443/index.html");
 
-#if 0
-  /* please be verbose */
-  curl_easy_setopt(hnd, CURLOPT_VERBOSE, 1L);
-#endif
-
   /* HTTP/2 please */
   curl_easy_setopt(hnd, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
 
@@ -103,10 +98,9 @@ static int server_push_callback(CURL *parent,
                                 void *userp)
 {
   char *headp;
-  size_t i;
   int *transfers = (int *)userp;
-
   (void)parent; /* we have no use for this */
+  (void)num_headers; /* unused */
 
   if(pushindex == MAX_FILES)
     /* can't fit anymore */
@@ -117,14 +111,9 @@ static int server_push_callback(CURL *parent,
   curl_easy_setopt(easy, CURLOPT_WRITEDATA, &files[pushindex]);
   pushindex++;
 
-  for(i = 0; i<num_headers; i++) {
-    headp = curl_pushheader_bynum(headers, i);
-  }
-
   headp = curl_pushheader_byname(headers, ":path");
-  if(headp) {
+  if(headp)
     fprintf(stderr, "* Pushed :path '%s'\n", headp /* skip :path + colon */);
-  }
 
   (*transfers)++; /* one more */
   return CURL_PUSH_OK;
