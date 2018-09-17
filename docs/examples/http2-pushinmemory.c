@@ -65,7 +65,7 @@ static int pushindex = 1;
 
 static void init_memory(struct Memory *chunk)
 {
-  chunk->memory = malloc(1);  /* will be grown as needed by the realloc above */
+  chunk->memory = malloc(1);  /* grown as needed with realloc */
   chunk->size = 0;            /* no data at this point */
 }
 
